@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Tiệm bánh Mây — Data Flow CURRENT",
+    "subtitle": "Dữ liệu checkout, state và evidence đều nằm trong memory của process",
+    "output": "dataflow-current.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 560],
+    "views": [
+      { "id": "orderData", "label": "Order data", "focus": ["checkoutInput", "orderBuilder", "catalogState", "orderState"], "note": "Customer name và line items tạo order, đồng thời giảm stock in-memory." },
+      { "id": "paymentData", "label": "Payment fixture", "focus": ["paymentFixture", "paymentResolver", "orderState"], "note": "Token fixture được rút thành outcome; order chỉ giữ payment id và amount." },
+      { "id": "evidenceData", "label": "Evidence", "focus": ["orderState", "paymentResolver", "orderFacts", "paymentFacts"], "note": "Hai loại entry cùng thuộc Event Log và không chứa raw payment token." }
+    ]
+  },
+  "stages": [
+    { "label": "Inputs" },
+    { "label": "Transform" },
+    { "label": "In-memory state" },
+    { "label": "Evidence" }
+  ],
+  "nodes": [
+    { "id": "checkoutInput", "type": "frontend", "label": "Checkout JSON", "sublabel": "customer + line items", "stage": 0, "row": 0 },
+    { "id": "paymentFixture", "type": "security", "label": "Payment Fixture", "sublabel": "token class", "stage": 0, "row": 2 },
+    { "id": "orderBuilder", "type": "backend", "label": "Order Builder", "sublabel": "normalize + reserve", "stage": 1, "row": 0 },
+    { "id": "paymentResolver", "type": "external", "label": "Payment Resolver", "sublabel": "success / error", "stage": 1, "row": 2 },
+    { "id": "catalogState", "type": "database", "label": "Catalog State", "sublabel": "stock in-memory", "stage": 2, "row": 0 },
+    { "id": "orderState", "type": "database", "label": "Order State", "sublabel": "order + history", "stage": 2, "row": 1 },
+    { "id": "orderFacts", "type": "messagebus", "label": "Order Facts", "sublabel": "Event Log entry", "stage": 3, "row": 0 },
+    { "id": "paymentFacts", "type": "messagebus", "label": "Payment Fact", "sublabel": "Event Log entry", "stage": 3, "row": 2 }
+  ],
+  "flows": [
+    { "id": "checkoutData", "from": "checkoutInput", "to": "orderBuilder", "label": "customer + items", "classification": "checkout input", "variant": "emphasis", "route": "straight" },
+    { "id": "stockMutation", "from": "orderBuilder", "to": "catalogState", "label": "itemId + quantity", "classification": "stock mutation", "route": "straight", "labelAt": [422, 100] },
+    { "id": "newOrder", "from": "orderBuilder", "to": "orderState", "label": "reserved order", "classification": "business state", "variant": "emphasis" },
+    { "id": "fixtureData", "from": "paymentFixture", "to": "paymentResolver", "label": "token class", "classification": "test-only", "variant": "security", "route": "straight" },
+    { "id": "resolvedPayment", "from": "paymentResolver", "to": "orderState", "label": "outcome + amount", "classification": "no raw token", "variant": "emphasis" },
+    { "id": "orderEvidence", "from": "orderState", "to": "orderFacts", "label": "order + state", "classification": "token-free", "variant": "dashed" },
+    { "id": "paymentEvidence", "from": "paymentResolver", "to": "paymentFacts", "label": "outcome + amount", "classification": "token-free", "variant": "dashed", "route": "straight" }
+  ]
+}
