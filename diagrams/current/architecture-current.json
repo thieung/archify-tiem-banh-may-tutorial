@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Tiệm bánh Mây — Architecture CURRENT",
+    "subtitle": "Các component có thật trong source code, không có database hay dịch vụ cloud",
+    "output": "architecture-current.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/thieung/archify-tiem-banh-may-tutorial",
+      "revision": "ca4de54c78ffaca9c6d6159ec9643fa0447c01e2"
+    },
+    "viewBox": [1180, 720],
+    "views": [
+      { "id": "request", "label": "Luồng request", "focus": ["browser", "orderApp", "catalog"], "note": "Browser gọi HTTP; order application điều phối catalog và trạng thái." },
+      { "id": "fulfillment", "label": "Thanh toán và bếp", "focus": ["orderApp", "payment", "kitchen"], "note": "Payment mock và kitchen worker thay đổi vòng đời order." },
+      { "id": "evidence", "label": "Event evidence", "focus": ["orderApp", "payment", "events"], "note": "Order application và payment append dữ kiện vào event log." }
+    ]
+  },
+  "components": [
+    { "id": "browser", "type": "frontend", "label": "Checkout UI", "sublabel": "Vanilla HTML / CSS / JS", "pos": [40, 290], "size": [150, 72], "sources": [{ "path": "public/app.js" }] },
+    { "id": "orderApp", "type": "backend", "label": "Order Application", "sublabel": "HTTP + order state", "pos": [360, 290], "size": [170, 72], "sources": [{ "path": "src/http.js" }, { "path": "src/orders.js" }, { "path": "src/server.js" }] },
+    { "id": "payment", "type": "external", "label": "Payment Mock", "sublabel": "Deterministic fixture", "pos": [370, 100], "size": [160, 72], "sources": [{ "path": "src/payment.js" }] },
+    { "id": "catalog", "type": "database", "label": "Catalog Store", "sublabel": "In-memory stock", "pos": [370, 480], "size": [160, 72], "sources": [{ "path": "src/catalog.js" }] },
+    { "id": "events", "type": "messagebus", "label": "Event Log", "sublabel": "In-memory evidence", "pos": [760, 290], "size": [160, 72], "sources": [{ "path": "src/events.js" }] },
+    { "id": "kitchen", "type": "backend", "label": "Kitchen Worker", "sublabel": "Explicit tick", "pos": [760, 480], "size": [160, 72], "sources": [{ "path": "src/kitchen.js" }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Một Node.js process", "wraps": ["orderApp", "catalog", "payment", "kitchen", "events"], "pad": 28 }
+  ],
+  "connections": [
+    { "id": "ui-app", "from": "browser", "to": "orderApp", "label": "fetch JSON", "variant": "emphasis" },
+    { "id": "app-events", "from": "orderApp", "to": "events", "label": "append evidence", "variant": "emphasis", "labelDy": -20 },
+    { "id": "app-payment", "from": "orderApp", "to": "payment", "label": "charge fixture", "fromSide": "top", "toSide": "bottom" },
+    { "id": "app-catalog", "from": "orderApp", "to": "catalog", "label": "list / reserve", "fromSide": "bottom", "toSide": "top", "labelAt": [340, 400] },
+    { "id": "app-kitchen", "from": "orderApp", "to": "kitchen", "label": "explicit tick", "fromSide": "bottom", "toSide": "left" }
+  ]
+}
