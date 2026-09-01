@@ -17,7 +17,7 @@
 | Payment mock | VERIFIED | `npm test`: success, decline, double-payment paths pass |
 | Kitchen worker | VERIFIED | `npm test`: explicit ticks, ready, complete và invalid state pass |
 | Web checkout | VERIFIED | Browser: happy path chạy từ catalog đến `COMPLETED`, desktop layout pass |
-| Tests và observability | PLANNED | Chưa có |
+| Tests và observability | VERIFIED | `npm run check`: 20/20 test pass, evidence kết thúc `COMPLETED` với 6 event |
 | Năm prompt CURRENT | PLANNED | Chưa có |
 | Năm diagram CURRENT | PLANNED | Chưa có |
 | Follower guide | PLANNED | Chưa có |
