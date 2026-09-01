@@ -1,5 +1,13 @@
 # Releases
 
+## v2.1.0 — Cloudflare hosted demo
+
+- Public app tại `https://demo.slopengineer.dev`.
+- Workers Static Assets phục vụ UI; Worker adapter phục vụ `/api/*`.
+- Browser session được route tới cùng Durable Object bằng secure HttpOnly cookie.
+- 25/25 test pass; public API và browser journey kết thúc `COMPLETED`.
+- Có guide deploy, rollback và evidence receipt; state vẫn được ghi rõ là memory-only.
+
 ## v2.0.0 — End-to-end tutorial
 
 - Ứng dụng Tiệm bánh Mây chạy thật bằng Node.js 20+, không có runtime dependency.

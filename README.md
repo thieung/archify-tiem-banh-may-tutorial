@@ -3,6 +3,8 @@
 Repository này là một ứng dụng web chạy thật kèm tutorial dùng AI Agent và
 [Archify](https://github.com/tt-a1i/archify) để tạo diagram từ source code.
 
+**Demo đang chạy:** [https://demo.slopengineer.dev](https://demo.slopengineer.dev)
+
 Đây không phải bộ ảnh mẫu rời rạc. Bạn có thể chạy app, tạo một order, xem state
 thay đổi, chạy test, đọc prompt đã dùng, rồi đối chiếu từng node và edge trong
 diagram với evidence.
@@ -55,6 +57,7 @@ HTML bằng browser để dùng theme, guided views, trace motion và export.
 3. Dùng [hướng dẫn cài skill](docs/ai-agent-setup.md) nếu agent chưa nhận Archify.
 4. Checkout từng [branch/tag học tập](docs/git-learning-history.md) để xem app lớn dần.
 5. Dùng [source map](evidence/source-map.md) để bắt lỗi AI suy diễn.
+6. Xem [cách deploy lên Cloudflare](docs/cloudflare-deployment.md) nếu muốn tự host.
 
 ## Verification nhanh
 
@@ -72,6 +75,9 @@ cả năm JSON và chỉ pass khi mỗi diagram đạt 9/9, 0 error, 0 warning.
 App dùng memory của một process và payment fixture deterministic. Nó không có
 database, queue, authentication, cloud infrastructure hay cổng thanh toán thật.
 Những thành phần đó không xuất hiện trong diagram `CURRENT`.
+
+Bản Cloudflare tách mỗi browser session vào một Durable Object nhưng vẫn chỉ giữ
+order trong memory. Đây là demo interactive, không phải nơi lưu order bền vững.
 
 Repository artifact cũ được giữ riêng tại
 [archify-tiem-banh-may-demo](https://github.com/thieung/archify-tiem-banh-may-demo).
