@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Tiệm bánh Mây — Sequence CURRENT",
+    "subtitle": "Create order và payment success trong một Node.js process",
+    "output": "sequence-current.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1080, 560],
+    "views": [
+      { "id": "createOrder", "label": "Tạo order", "focus": ["browser", "http", "orders", "catalog", "events"], "note": "Catalog được kiểm tra và reserve trước khi order trả về." },
+      { "id": "payOrder", "label": "Thanh toán", "focus": ["browser", "http", "payment", "orders", "events"], "note": "Payment success được ghi event rồi order chuyển sang CONFIRMED." }
+    ]
+  },
+  "participants": [
+    { "id": "browser", "type": "frontend", "label": "Browser" },
+    { "id": "http", "type": "backend", "label": "HTTP API" },
+    { "id": "orders", "type": "database", "label": "Order Store" },
+    { "id": "catalog", "type": "database", "label": "Catalog" },
+    { "id": "payment", "type": "external", "label": "Payment Mock" },
+    { "id": "events", "type": "messagebus", "label": "Event Log" }
+  ],
+  "segments": [
+    { "from": 150, "to": 300, "label": "Create order" },
+    { "from": 305, "to": 490, "label": "Pay order" }
+  ],
+  "messages": [
+    { "id": "postOrder", "from": "browser", "to": "http", "y": 170, "label": "POST /api/orders", "variant": "emphasis" },
+    { "id": "create", "from": "http", "to": "orders", "y": 200, "label": "create(input)", "variant": "emphasis" },
+    { "id": "reserve", "from": "orders", "to": "catalog", "y": 230, "label": "find + reserve" },
+    { "id": "orderEvent", "from": "orders", "to": "events", "y": 260, "label": "ORDER_CREATED", "variant": "dashed" },
+    { "id": "createdResponse", "from": "http", "to": "browser", "y": 282, "label": "201 AWAITING_PAYMENT", "variant": "return" },
+    { "id": "postPay", "from": "browser", "to": "http", "y": 312, "label": "POST /orders/:id/pay", "variant": "emphasis" },
+    { "id": "charge", "from": "http", "to": "payment", "y": 340, "label": "charge(tok_success)", "variant": "emphasis" },
+    { "id": "paymentEvent", "from": "payment", "to": "events", "y": 368, "label": "PAYMENT_CHARGED", "variant": "dashed" },
+    { "id": "paymentOk", "from": "payment", "to": "http", "y": 396, "label": "paymentId + amount", "variant": "return" },
+    { "id": "confirm", "from": "http", "to": "orders", "y": 424, "label": "confirmPayment" },
+    { "id": "stateEvent", "from": "orders", "to": "events", "y": 452, "label": "STATE_CHANGED", "variant": "dashed" },
+    { "id": "payResponse", "from": "http", "to": "browser", "y": 477, "label": "200 CONFIRMED", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "http", "from": 165, "to": 487, "type": "backend" },
+    { "participant": "orders", "from": 195, "to": 270, "type": "database" },
+    { "participant": "orders", "from": 419, "to": 462, "type": "database" },
+    { "participant": "catalog", "from": 225, "to": 245, "type": "database" },
+    { "participant": "payment", "from": 335, "to": 406, "type": "external" },
+    { "participant": "events", "from": 255, "to": 462, "type": "messagebus" }
+  ]
+}
