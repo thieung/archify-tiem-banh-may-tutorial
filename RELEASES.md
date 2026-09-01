@@ -6,7 +6,8 @@
 - Domain root tạm thời redirect tới demo; app không còn chiếm `/api/*` ở root.
 - Static assets, API và session cookie đều được scope theo slug ổn định.
 - Local Node tutorial vẫn chạy ở `http://localhost:3000` mà không cần cấu hình prefix.
-- 28/28 test pass trước deployment; live verification được lưu trong evidence release.
+- 28/28 test pass trước deployment; [live verification](evidence/cloudflare-deployment-v2.2.0.md)
+  ghi lại Version ID, API journey và browser QA.
 
 ## v2.1.0 — Cloudflare hosted demo
 
