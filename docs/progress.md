@@ -12,7 +12,7 @@
 | Lát | Trạng thái | Evidence |
 |---|---|---|
 | Learning baseline | WRITTEN | `docs/learning-path.md`, lịch sử Git |
-| App foundation | PLANNED | Chưa có |
+| App foundation | VERIFIED | `npm test`: 3/3 pass trên Node.js 26.4.0 |
 | Order domain | PLANNED | Chưa có |
 | Payment mock | PLANNED | Chưa có |
 | Kitchen worker | PLANNED | Chưa có |
