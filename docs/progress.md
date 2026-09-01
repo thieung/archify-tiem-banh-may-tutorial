@@ -20,6 +20,6 @@
 | Tests và observability | VERIFIED | `npm run check`: 20/20 test pass, evidence kết thúc `COMPLETED` với 6 event |
 | Năm prompt CURRENT | VERIFIED | Mỗi prompt pin evidence revision và có branch/tag riêng |
 | Năm diagram CURRENT | HUMAN REVIEWED | 5/5 showcase validation 9/9; visual containment và light/dark captures pass |
-| Follower guide | WRITTEN | `README.md`, `docs/ai-agent-setup.md`, `docs/end-to-end-guide.md` |
+| Follower guide | VERIFIED | Markdown links pass; clean-clone commands và missing-env guard đã chạy |
 
 Không dùng trạng thái `VERIFIED` chỉ vì file tồn tại hoặc sơ đồ trông hợp lý.
