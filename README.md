@@ -8,10 +8,12 @@ CURRENT: Architecture, Workflow, Sequence, Data Flow và Lifecycle.
 > Repository này là tutorial độc lập. Bộ artifact minh họa cũ vẫn được giữ nguyên
 > tại [archify-tiem-banh-may-demo](https://github.com/thieung/archify-tiem-banh-may-demo).
 
-## Trạng thái
+## Bắt đầu ở đâu?
 
-Đang triển khai theo từng feature branch. Mỗi lát học có annotated tag trước khi
-được merge bằng `--no-ff` về `main`.
+- Người không viết code: đọc [lộ trình học](docs/learning-path.md) trước.
+- Người muốn chạy ngay: chờ mốc `feature-02-app-foundation-v2.0.0` rồi dùng
+  `npm start`.
+- Người muốn xem lịch sử xây dựng: đọc [quy ước branch và tag](docs/git-learning-history.md).
 
 ## Đích đến
 
@@ -21,8 +23,9 @@ App chạy thật → test/log làm evidence → prompt cho AI Agent
              → người học đối chiếu sơ đồ với code
 ```
 
-Chi tiết sẽ được bổ sung tuần tự trong `docs/`, `prompts/`, `evidence/` và
-`diagrams/`.
+Chi tiết được bổ sung tuần tự trong `docs/`, `prompts/`, `evidence/` và
+`diagrams/`. [Bảng tiến độ](docs/progress.md) phân biệt rõ phần dự kiến, đã viết,
+đã chạy và đã được con người xem lại.
 
 ## License
 
