@@ -13,7 +13,7 @@
 |---|---|---|
 | Learning baseline | WRITTEN | `docs/learning-path.md`, lịch sử Git |
 | App foundation | VERIFIED | `npm test`: 3/3 pass trên Node.js 26.4.0 |
-| Order domain | PLANNED | Chưa có |
+| Order domain | WRITTEN | `src/catalog.js`, `src/orders.js`, `POST /api/orders` |
 | Payment mock | PLANNED | Chưa có |
 | Kitchen worker | PLANNED | Chưa có |
 | Web checkout | PLANNED | Chưa có |
