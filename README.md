@@ -27,6 +27,20 @@ Chi tiết được bổ sung tuần tự trong `docs/`, `prompts/`, `evidence/`
 `diagrams/`. [Bảng tiến độ](docs/progress.md) phân biệt rõ phần dự kiến, đã viết,
 đã chạy và đã được con người xem lại.
 
+## Chạy app
+
+Yêu cầu Node.js 20 trở lên. App không có runtime dependency bên ngoài.
+
+```bash
+npm start
+```
+
+Mở `http://localhost:3000`. Kiểm tra foundation bằng:
+
+```bash
+npm test
+```
+
 ## License
 
 MIT
