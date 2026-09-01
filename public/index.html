@@ -1,30 +1,34 @@
 <!doctype html>
 <html lang="vi">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tiệm bánh Mây</title>
-    <link rel="stylesheet" href="/styles.css">
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tiệm bánh Mây</title><link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <main class="shell">
-      <p class="eyebrow">Archify end-to-end tutorial</p>
-      <h1>Tiệm bánh Mây</h1>
-      <p class="intro">
-        Đây là app chạy thật dùng làm evidence cho các sơ đồ CURRENT. Catalog
-        đã xuất hiện từ feature 03, còn checkout sẽ hoàn thiện ở các feature
-        tiếp theo.
-      </p>
-      <section class="status" aria-labelledby="status-title">
-        <h2 id="status-title">Trạng thái server</h2>
-        <p id="server-status">Đang kiểm tra…</p>
+      <header class="hero">
+        <div><p class="eyebrow">Archify end-to-end tutorial</p><h1>Tiệm bánh Mây</h1><p class="intro">Một đơn bánh thật, năm góc nhìn kiến trúc có evidence.</p></div>
+        <p id="server-status" class="server-status">Đang kiểm tra server…</p>
+      </header>
+      <section aria-labelledby="catalog-title">
+        <div class="section-heading"><div><p class="step">Bước 1</p><h2 id="catalog-title">Chọn món</h2></div><p>Catalog từ <code>GET /api/catalog</code>.</p></div>
+        <div id="catalog" class="catalog" aria-live="polite"></div>
       </section>
-      <section class="catalog" aria-labelledby="catalog-title">
-        <div class="section-copy">
-          <h2 id="catalog-title">Catalog hôm nay</h2>
-          <p>Mỗi item bên dưới đều đến từ API `/api/catalog`.</p>
+      <section class="checkout" aria-labelledby="checkout-title">
+        <div><p class="step">Bước 2</p><h2 id="checkout-title">Tạo đơn và thanh toán</h2><p>Mỗi thao tác tương ứng một API call có thể kiểm tra.</p></div>
+        <form id="checkout-form">
+          <label>Tên khách<input name="customerName" value="Mai" autocomplete="name"></label>
+          <label>Kết quả thanh toán<select name="paymentToken"><option value="tok_success">Thành công</option><option value="tok_declined">Thẻ bị từ chối</option></select></label>
+          <button type="submit">Tạo đơn và thanh toán</button>
+        </form>
+      </section>
+      <section class="order-panel" aria-labelledby="order-title">
+        <div class="section-heading">
+          <div><p class="step">Bước 3</p><h2 id="order-title">Theo dõi đơn</h2></div>
+          <div class="actions"><button id="kitchen-tick" type="button" disabled>Cho bếp chạy 1 nhịp</button><button id="complete-order" type="button" disabled>Khách đã nhận</button></div>
         </div>
-        <div id="catalog-list" class="catalog-list" aria-live="polite"></div>
+        <p id="order-empty">Chưa có đơn. Hãy chọn một món ở trên.</p>
+        <div id="order-result" hidden><p class="order-summary"><strong id="order-id"></strong> · <span id="order-total"></span></p><ol id="order-history" class="timeline"></ol></div>
       </section>
     </main>
     <script type="module" src="/app.js"></script>

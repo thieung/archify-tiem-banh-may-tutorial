@@ -16,7 +16,7 @@
 | Order domain | VERIFIED | `npm test`: catalog, create/get order, sold-out paths pass |
 | Payment mock | VERIFIED | `npm test`: success, decline, double-payment paths pass |
 | Kitchen worker | VERIFIED | `npm test`: explicit ticks, ready, complete và invalid state pass |
-| Web checkout | PLANNED | Chưa có |
+| Web checkout | VERIFIED | Browser: happy path chạy từ catalog đến `COMPLETED`, desktop layout pass |
 | Tests và observability | PLANNED | Chưa có |
 | Năm prompt CURRENT | PLANNED | Chưa có |
 | Năm diagram CURRENT | PLANNED | Chưa có |
