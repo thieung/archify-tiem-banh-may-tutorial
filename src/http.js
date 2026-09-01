@@ -3,6 +3,7 @@ import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCatalogStore } from './catalog.js';
 import { createOrderStore } from './orders.js';
+import { createPaymentGateway } from './payment.js';
 
 const publicDirectory = fileURLToPath(new URL('../public/', import.meta.url));
 const contentTypes = {
@@ -47,6 +48,7 @@ async function sendPublicFile(response, fileName) {
 export function createRequestHandler({
   catalogStore = createCatalogStore(),
   orderStore = createOrderStore({ catalogStore }),
+  paymentGateway = createPaymentGateway(),
 } = {}) {
   return async function requestHandler(request, response) {
     const url = new URL(request.url, 'http://localhost');
@@ -83,6 +85,38 @@ export function createRequestHandler({
         return;
       }
       sendJson(response, 200, { order });
+      return;
+    }
+
+    const paymentMatch = url.pathname.match(/^\/api\/orders\/([^/]+)\/pay$/);
+    if (request.method === 'POST' && paymentMatch) {
+      try {
+        const order = orderStore.get(paymentMatch[1]);
+        if (!order) {
+          sendJson(response, 404, { error: 'ORDER_NOT_FOUND' });
+          return;
+        }
+        if (order.state !== 'AWAITING_PAYMENT') {
+          sendJson(response, 409, { error: 'INVALID_ORDER_STATE', state: order.state });
+          return;
+        }
+
+        const { token } = await readJson(request);
+        const charged = paymentGateway.charge({ orderId: order.id, amount: order.total, token });
+        const result = charged.ok
+          ? orderStore.confirmPayment(order.id, {
+              id: charged.paymentId,
+              amount: charged.amount,
+            })
+          : orderStore.failPayment(order.id, charged.error);
+
+        sendJson(response, charged.ok ? 200 : 402, {
+          order: result.order,
+          ...(charged.ok ? {} : { error: charged.error }),
+        });
+      } catch {
+        sendJson(response, 400, { error: 'INVALID_JSON' });
+      }
       return;
     }
 

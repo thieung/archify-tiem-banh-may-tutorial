@@ -1,16 +1,16 @@
 import assert from 'node:assert/strict';
-import { after, before, test } from 'node:test';
+import { afterEach, beforeEach, test } from 'node:test';
 import { startServer } from '../src/server.js';
 
 let baseUrl;
 let server;
 
-before(async () => {
+beforeEach(async () => {
   server = await startServer({ port: 0 });
   baseUrl = `http://127.0.0.1:${server.address().port}`;
 });
 
-after(() => new Promise((resolve, reject) => {
+afterEach(() => new Promise((resolve, reject) => {
   server.close((error) => (error ? reject(error) : resolve()));
 }));
 
@@ -32,6 +32,24 @@ test('unknown routes return a bounded JSON error', async () => {
   const response = await fetch(`${baseUrl}/not-real`);
   assert.equal(response.status, 404);
   assert.deepEqual(await response.json(), { error: 'NOT_FOUND' });
+});
+
+test('POST /api/orders/:id/pay exposes the deterministic payment boundary', async () => {
+  const createdResponse = await fetch(`${baseUrl}/api/orders`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ lineItems: [{ itemId: 'tra-dao', quantity: 1 }] }),
+  });
+  const { order } = await createdResponse.json();
+  const paymentResponse = await fetch(`${baseUrl}/api/orders/${order.id}/pay`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ token: 'tok_success' }),
+  });
+  const payload = await paymentResponse.json();
+
+  assert.equal(paymentResponse.status, 200);
+  assert.equal(payload.order.state, 'CONFIRMED');
 });
 
 test('GET /api/catalog exposes stock-backed bakery items', async () => {

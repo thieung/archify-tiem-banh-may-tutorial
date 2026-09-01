@@ -43,6 +43,29 @@ export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
     return lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
   }
 
+  function copyOrder(order) {
+    return order ? {
+      ...order,
+      lineItems: order.lineItems.map((item) => ({ ...item })),
+      history: order.history.map((entry) => ({ ...entry })),
+    } : null;
+  }
+
+  function transition(orderId, { from, to, note, details = {} }) {
+    const order = orders.get(orderId);
+    if (!order) {
+      return { ok: false, statusCode: 404, error: 'ORDER_NOT_FOUND' };
+    }
+    if (order.state !== from) {
+      return { ok: false, statusCode: 409, error: 'INVALID_ORDER_STATE', state: order.state };
+    }
+
+    order.state = to;
+    Object.assign(order, details);
+    order.history.push({ state: to, note });
+    return { ok: true, order: copyOrder(order) };
+  }
+
   return {
     create({ customerName, lineItems: rawLineItems }) {
       const normalized = normalizeLineItems(rawLineItems);
@@ -70,12 +93,29 @@ export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
       };
       nextOrderNumber += 1;
       orders.set(order.id, order);
-      return { ok: true, order: { ...order, lineItems: [...order.lineItems], history: [...order.history] } };
+      return { ok: true, order: copyOrder(order) };
     },
 
     get(orderId) {
-      const order = orders.get(orderId);
-      return order ? { ...order, lineItems: [...order.lineItems], history: [...order.history] } : null;
+      return copyOrder(orders.get(orderId));
+    },
+
+    confirmPayment(orderId, payment) {
+      return transition(orderId, {
+        from: orderStates.awaitingPayment,
+        to: orderStates.confirmed,
+        note: 'Thanh toán thành công, đơn đã vào hàng chờ làm bánh.',
+        details: { payment },
+      });
+    },
+
+    failPayment(orderId, error) {
+      return transition(orderId, {
+        from: orderStates.awaitingPayment,
+        to: orderStates.paymentFailed,
+        note: `Thanh toán thất bại: ${error}.`,
+        details: { paymentError: error },
+      });
     },
   };
 }
