@@ -1,6 +1,6 @@
 {
   "name": "archify-tiem-banh-may-tutorial",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "Runnable bakery app used to teach evidence-first Archify diagramming",
   "type": "module",

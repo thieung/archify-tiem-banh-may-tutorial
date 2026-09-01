@@ -4,13 +4,15 @@
 
 Cloudflare Workers phục vụ API, còn Workers Static Assets phục vụ ba file trong
 `public/`. Mỗi browser session được route tới một Durable Object để các request
-create/pay/tick/complete nhìn thấy cùng state. Custom Domain trỏ toàn bộ
-`demo.slopengineer.dev` tới Worker này.
+create/pay/tick/complete nhìn thấy cùng state. Worker mount app tại slug ổn định
+`/s/9eb05eebff7f/` để Custom Domain có thể chứa thêm demo khác sau này.
 
 ```text
 Browser → demo.slopengineer.dev
-        ├─ /, /app.js, /styles.css → Static Assets
-        └─ /api/*                  → Worker adapter → session Durable Object
+        ├─ /                         → redirect tới /s/9eb05eebff7f/
+        └─ /s/9eb05eebff7f/
+           ├─ app.js, styles.css     → Static Assets
+           └─ api/*                  → Worker adapter → session Durable Object
 ```
 
 Local Node server vẫn chạy bằng `npm start`. `src/worker.js` là adapter riêng
@@ -43,11 +45,13 @@ Không tạo CNAME thủ công cho hostname này.
 ## Verification
 
 ```bash
-curl --fail https://demo.slopengineer.dev/api/health
-curl --fail https://demo.slopengineer.dev/
+curl --fail --location https://demo.slopengineer.dev/
+curl --fail https://demo.slopengineer.dev/s/9eb05eebff7f/api/health
+test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  https://demo.slopengineer.dev/api/health)" = "404"
 ```
 
-Health response phải chứa:
+Health response dưới slug phải chứa:
 
 ```json
 {"service":"tiem-banh-may","status":"ok","runtime":"cloudflare-worker"}
@@ -55,6 +59,9 @@ Health response phải chứa:
 
 Sau đó dùng browser chạy create → pay → hai kitchen tick → complete. State cuối
 phải là `COMPLETED`.
+
+Request cuối cùng tới API ở root phải trả `404`. Session cookie phải có
+`Path=/s/9eb05eebff7f` để không rò sang demo khác cùng domain.
 
 ## Rollback
 
@@ -80,4 +87,4 @@ Rollback code không phục hồi state vì app không có durable storage.
 
 ## Câu Hỏi Chưa Rõ
 
-- Không có trong phạm vi deployment demo v2.1.0.
+- Không có trong phạm vi deployment demo v2.2.0.

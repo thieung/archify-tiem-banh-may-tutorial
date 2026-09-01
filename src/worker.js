@@ -4,6 +4,9 @@ import { createPaymentGateway } from './payment.js';
 import { createKitchenWorker } from './kitchen.js';
 import { createEventLog } from './events.js';
 
+const DEMO_ID = '9eb05eebff7f';
+const DEMO_BASE_PATH = `/s/${DEMO_ID}`;
+
 function json(payload, status = 200) {
   return Response.json(payload, { status });
 }
@@ -115,17 +118,46 @@ function readSessionId(request) {
     : null;
 }
 
+function rewritePath(request, pathname) {
+  const url = new URL(request.url);
+  url.pathname = pathname;
+  return new Request(url, request);
+}
+
+function redirectToDemo(request) {
+  return Response.redirect(new URL(`${DEMO_BASE_PATH}/`, request.url), 302);
+}
+
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+
+    if (['GET', 'HEAD'].includes(request.method) && url.pathname === '/') {
+      return redirectToDemo(request);
+    }
+
+    if (['GET', 'HEAD'].includes(request.method) && url.pathname === DEMO_BASE_PATH) {
+      return redirectToDemo(request);
+    }
+
+    if (!url.pathname.startsWith(`${DEMO_BASE_PATH}/`)) {
+      return json({ error: 'NOT_FOUND' }, 404);
+    }
+
+    const appPath = url.pathname.slice(DEMO_BASE_PATH.length) || '/';
+    if (!appPath.startsWith('/api/')) {
+      return env.ASSETS.fetch(rewritePath(request, appPath));
+    }
+
     const existingSessionId = readSessionId(request);
     const sessionId = existingSessionId ?? crypto.randomUUID();
-    const response = await env.BAKERY_SESSION.getByName(sessionId).fetch(request);
+    const response = await env.BAKERY_SESSION.getByName(sessionId).fetch(rewritePath(request, appPath));
     if (existingSessionId) return response;
 
     const withSession = new Response(response.body, response);
     withSession.headers.append(
       'set-cookie',
-      `bakery_session=${sessionId}; Path=/; Max-Age=3600; HttpOnly; Secure; SameSite=Lax`,
+      `bakery_session=${sessionId}; Path=${DEMO_BASE_PATH}; Max-Age=3600; HttpOnly; Secure; SameSite=Lax`,
     );
     return withSession;
   },

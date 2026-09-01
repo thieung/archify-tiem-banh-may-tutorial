@@ -7,6 +7,8 @@ const elements = {
 };
 let currentOrder = null;
 let selectedItemId = null;
+const appBasePath = new URL('.', import.meta.url).pathname.replace(/\/$/, '');
+const apiPath = (path) => `${appBasePath}${path}`;
 
 async function requestJson(path, options) {
   const response = await fetch(path, options);
@@ -37,7 +39,7 @@ function renderOrder(order) {
 }
 
 async function loadCatalog() {
-  const { payload } = await requestJson('/api/catalog');
+  const { payload } = await requestJson(apiPath('/api/catalog'));
   selectedItemId = payload.items[0]?.id ?? null;
   elements.catalog.replaceChildren(...payload.items.map((item, index) => {
     const label = document.createElement('label');
@@ -57,9 +59,9 @@ elements.form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(elements.form);
   try {
-    const created = await requestJson('/api/orders', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ customerName: formData.get('customerName'), lineItems: [{ itemId: selectedItemId, quantity: 1 }] }) });
+    const created = await requestJson(apiPath('/api/orders'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ customerName: formData.get('customerName'), lineItems: [{ itemId: selectedItemId, quantity: 1 }] }) });
     renderOrder(created.payload.order);
-    const paid = await requestJson(`/api/orders/${created.payload.order.id}/pay`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: formData.get('paymentToken') }) });
+    const paid = await requestJson(apiPath(`/api/orders/${created.payload.order.id}/pay`), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: formData.get('paymentToken') }) });
     renderOrder(paid.payload.order);
   } catch (error) {
     elements.empty.hidden = false;
@@ -68,17 +70,17 @@ elements.form.addEventListener('submit', async (event) => {
 });
 
 elements.tick.addEventListener('click', async () => {
-  const { payload } = await requestJson('/api/kitchen/tick', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ orderId: currentOrder.id }) });
+  const { payload } = await requestJson(apiPath('/api/kitchen/tick'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ orderId: currentOrder.id }) });
   renderOrder(payload.order);
 });
 
 elements.complete.addEventListener('click', async () => {
-  const { payload } = await requestJson(`/api/orders/${currentOrder.id}/complete`, { method: 'POST' });
+  const { payload } = await requestJson(apiPath(`/api/orders/${currentOrder.id}/complete`), { method: 'POST' });
   renderOrder(payload.order);
 });
 
 try {
-  const { payload } = await requestJson('/api/health');
+  const { payload } = await requestJson(apiPath('/api/health'));
   elements.serverStatus.textContent = payload.status === 'ok' ? 'Server sẵn sàng' : 'Server chưa sẵn sàng';
   await loadCatalog();
 } catch {
