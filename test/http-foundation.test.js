@@ -25,6 +25,8 @@ test('GET / serves the tutorial web shell', async () => {
   const html = await response.text();
   assert.equal(response.status, 200);
   assert.match(html, /Tiệm bánh Mây/);
+  assert.match(html, /Tạo đơn và thanh toán/);
+  assert.match(html, /Cho bếp chạy 1 nhịp/);
   assert.match(response.headers.get('content-type'), /text\/html/);
 });
 
