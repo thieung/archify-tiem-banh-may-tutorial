@@ -1,5 +1,13 @@
 # Releases
 
+## v2.2.0 — Stable demo slug
+
+- Public app chuyển sang `https://demo.slopengineer.dev/s/9eb05eebff7f/` để domain có thể chứa nhiều demo.
+- Domain root tạm thời redirect tới demo; app không còn chiếm `/api/*` ở root.
+- Static assets, API và session cookie đều được scope theo slug ổn định.
+- Local Node tutorial vẫn chạy ở `http://localhost:3000` mà không cần cấu hình prefix.
+- 28/28 test pass trước deployment; live verification được lưu trong evidence release.
+
 ## v2.1.0 — Cloudflare hosted demo
 
 - Public app tại `https://demo.slopengineer.dev`.

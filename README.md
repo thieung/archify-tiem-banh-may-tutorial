@@ -3,7 +3,7 @@
 Repository này là một ứng dụng web chạy thật kèm tutorial dùng AI Agent và
 [Archify](https://github.com/tt-a1i/archify) để tạo diagram từ source code.
 
-**Demo đang chạy:** [https://demo.slopengineer.dev](https://demo.slopengineer.dev)
+**Demo đang chạy:** [https://demo.slopengineer.dev/s/9eb05eebff7f/](https://demo.slopengineer.dev/s/9eb05eebff7f/)
 
 Đây không phải bộ ảnh mẫu rời rạc. Bạn có thể chạy app, tạo một order, xem state
 thay đổi, chạy test, đọc prompt đã dùng, rồi đối chiếu từng node và edge trong
@@ -66,7 +66,7 @@ npm run check
 ARCHIFY_SKILL_ROOT=/đường/dẫn/tới/archify npm run diagrams:check
 ```
 
-`npm run check` chạy 20 test tuần tự và tái tạo
+`npm run check` chạy 28 test tuần tự và tái tạo
 `evidence/happy-path-order.json`. `diagrams:check` chạy showcase validation cho
 cả năm JSON và chỉ pass khi mỗi diagram đạt 9/9, 0 error, 0 warning.
 
