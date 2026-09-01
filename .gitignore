@@ -4,3 +4,4 @@ node_modules/
 coverage/
 tmp/
 diagrams/current/receipts/
+diagrams/current/*.visual-check.json
