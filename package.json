@@ -1,17 +1,24 @@
 {
   "name": "archify-tiem-banh-may-tutorial",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Runnable bakery app used to teach evidence-first Archify diagramming",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/server.js",
+    "dev:cloudflare": "wrangler dev",
+    "deploy:cloudflare": "wrangler deploy",
     "demo": "node scripts/run-demo.js",
     "evidence": "node scripts/run-demo.js --output evidence/happy-path-order.json",
     "test": "node --test --test-concurrency=1",
     "check": "npm test && npm run evidence",
     "diagrams:check": "node scripts/check-diagrams.js"
+  },
+  "devDependencies": {
+    "wrangler": "4.127.1"
   },
   "license": "MIT"
 }
