@@ -10,7 +10,8 @@
     "demo": "node scripts/run-demo.js",
     "evidence": "node scripts/run-demo.js --output evidence/happy-path-order.json",
     "test": "node --test --test-concurrency=1",
-    "check": "npm test && npm run evidence"
+    "check": "npm test && npm run evidence",
+    "diagrams:check": "node scripts/check-diagrams.js"
   },
   "license": "MIT"
 }
