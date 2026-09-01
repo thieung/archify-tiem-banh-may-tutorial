@@ -117,5 +117,29 @@ export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
         details: { paymentError: error },
       });
     },
+
+    startKitchen(orderId) {
+      return transition(orderId, {
+        from: orderStates.confirmed,
+        to: orderStates.inKitchen,
+        note: 'Bếp đã nhận đơn và bắt đầu chuẩn bị.',
+      });
+    },
+
+    markReady(orderId) {
+      return transition(orderId, {
+        from: orderStates.inKitchen,
+        to: orderStates.ready,
+        note: 'Đơn đã sẵn sàng để khách nhận.',
+      });
+    },
+
+    complete(orderId) {
+      return transition(orderId, {
+        from: orderStates.ready,
+        to: orderStates.completed,
+        note: 'Khách đã nhận đủ món.',
+      });
+    },
   };
 }

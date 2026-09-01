@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createCatalogStore } from './catalog.js';
 import { createOrderStore } from './orders.js';
 import { createPaymentGateway } from './payment.js';
+import { createKitchenWorker } from './kitchen.js';
 
 const publicDirectory = fileURLToPath(new URL('../public/', import.meta.url));
 const contentTypes = {
@@ -49,6 +50,7 @@ export function createRequestHandler({
   catalogStore = createCatalogStore(),
   orderStore = createOrderStore({ catalogStore }),
   paymentGateway = createPaymentGateway(),
+  kitchenWorker = createKitchenWorker({ orderStore }),
 } = {}) {
   return async function requestHandler(request, response) {
     const url = new URL(request.url, 'http://localhost');
@@ -117,6 +119,28 @@ export function createRequestHandler({
       } catch {
         sendJson(response, 400, { error: 'INVALID_JSON' });
       }
+      return;
+    }
+
+    if (request.method === 'POST' && url.pathname === '/api/kitchen/tick') {
+      try {
+        const { orderId } = await readJson(request);
+        const result = kitchenWorker.tick(String(orderId ?? ''));
+        sendJson(response, result.ok ? 200 : result.statusCode, result.ok
+          ? { order: result.order }
+          : { error: result.error, state: result.state });
+      } catch {
+        sendJson(response, 400, { error: 'INVALID_JSON' });
+      }
+      return;
+    }
+
+    const completeMatch = url.pathname.match(/^\/api\/orders\/([^/]+)\/complete$/);
+    if (request.method === 'POST' && completeMatch) {
+      const result = orderStore.complete(completeMatch[1]);
+      sendJson(response, result.ok ? 200 : result.statusCode, result.ok
+        ? { order: result.order }
+        : { error: result.error, state: result.state });
       return;
     }
 

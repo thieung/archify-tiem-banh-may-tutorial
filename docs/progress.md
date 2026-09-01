@@ -15,7 +15,7 @@
 | App foundation | VERIFIED | `npm test`: 3/3 pass trên Node.js 26.4.0 |
 | Order domain | VERIFIED | `npm test`: catalog, create/get order, sold-out paths pass |
 | Payment mock | VERIFIED | `npm test`: success, decline, double-payment paths pass |
-| Kitchen worker | PLANNED | Chưa có |
+| Kitchen worker | VERIFIED | `npm test`: explicit ticks, ready, complete và invalid state pass |
 | Web checkout | PLANNED | Chưa có |
 | Tests và observability | PLANNED | Chưa có |
 | Năm prompt CURRENT | PLANNED | Chưa có |
