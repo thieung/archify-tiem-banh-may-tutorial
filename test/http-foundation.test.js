@@ -52,6 +52,34 @@ test('POST /api/orders/:id/pay exposes the deterministic payment boundary', asyn
   assert.equal(payload.order.state, 'CONFIRMED');
 });
 
+test('kitchen ticks and completion expose the fulfillment lifecycle', async () => {
+  const createdResponse = await fetch(`${baseUrl}/api/orders`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ lineItems: [{ itemId: 'banh-mi-may', quantity: 1 }] }),
+  });
+  const { order } = await createdResponse.json();
+  await fetch(`${baseUrl}/api/orders/${order.id}/pay`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ token: 'tok_success' }),
+  });
+
+  for (const expectedState of ['IN_KITCHEN', 'READY']) {
+    const tickResponse = await fetch(`${baseUrl}/api/kitchen/tick`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ orderId: order.id }),
+    });
+    assert.equal((await tickResponse.json()).order.state, expectedState);
+  }
+
+  const completeResponse = await fetch(`${baseUrl}/api/orders/${order.id}/complete`, {
+    method: 'POST',
+  });
+  assert.equal((await completeResponse.json()).order.state, 'COMPLETED');
+});
+
 test('GET /api/catalog exposes stock-backed bakery items', async () => {
   const response = await fetch(`${baseUrl}/api/catalog`);
   const body = await response.json();
