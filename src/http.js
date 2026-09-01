@@ -5,6 +5,7 @@ import { createCatalogStore } from './catalog.js';
 import { createOrderStore } from './orders.js';
 import { createPaymentGateway } from './payment.js';
 import { createKitchenWorker } from './kitchen.js';
+import { createEventLog } from './events.js';
 
 const publicDirectory = fileURLToPath(new URL('../public/', import.meta.url));
 const contentTypes = {
@@ -47,9 +48,10 @@ async function sendPublicFile(response, fileName) {
 }
 
 export function createRequestHandler({
+  eventLog = createEventLog(),
   catalogStore = createCatalogStore(),
-  orderStore = createOrderStore({ catalogStore }),
-  paymentGateway = createPaymentGateway(),
+  orderStore = createOrderStore({ catalogStore, eventLog }),
+  paymentGateway = createPaymentGateway({ eventLog }),
   kitchenWorker = createKitchenWorker({ orderStore }),
 } = {}) {
   return async function requestHandler(request, response) {
@@ -62,6 +64,11 @@ export function createRequestHandler({
 
     if (request.method === 'GET' && url.pathname === '/api/catalog') {
       sendJson(response, 200, { items: catalogStore.list() });
+      return;
+    }
+
+    if (request.method === 'GET' && url.pathname === '/api/events') {
+      sendJson(response, 200, { events: eventLog.list() });
       return;
     }
 

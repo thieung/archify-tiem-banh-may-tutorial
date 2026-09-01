@@ -7,8 +7,10 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "start": "node src/server.js",
+    "demo": "node scripts/run-demo.js",
+    "evidence": "node scripts/run-demo.js --output evidence/happy-path-order.json",
     "test": "node --test --test-concurrency=1",
-    "check": "npm test"
+    "check": "npm test && npm run evidence"
   },
   "license": "MIT"
 }

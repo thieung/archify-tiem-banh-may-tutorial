@@ -1,0 +1,109 @@
+{
+  "scenario": "happy-path-order",
+  "input": {
+    "customerName": "Mai",
+    "itemId": "banh-mi-may",
+    "quantity": 1,
+    "paymentTokenClass": "success-fixture"
+  },
+  "output": {
+    "order": {
+      "id": "ORD-0001",
+      "customerName": "Mai",
+      "lineItems": [
+        {
+          "itemId": "banh-mi-may",
+          "name": "Bánh mì Mây",
+          "quantity": 1,
+          "unitPrice": 32000
+        }
+      ],
+      "total": 32000,
+      "state": "COMPLETED",
+      "history": [
+        {
+          "state": "AWAITING_PAYMENT",
+          "note": "Đã giữ hàng trong catalog, chờ thanh toán."
+        },
+        {
+          "state": "CONFIRMED",
+          "note": "Thanh toán thành công, đơn đã vào hàng chờ làm bánh."
+        },
+        {
+          "state": "IN_KITCHEN",
+          "note": "Bếp đã nhận đơn và bắt đầu chuẩn bị."
+        },
+        {
+          "state": "READY",
+          "note": "Đơn đã sẵn sàng để khách nhận."
+        },
+        {
+          "state": "COMPLETED",
+          "note": "Khách đã nhận đủ món."
+        }
+      ],
+      "payment": {
+        "id": "PAY-ORD-0001",
+        "amount": 32000
+      }
+    },
+    "events": [
+      {
+        "sequence": 1,
+        "type": "ORDER_CREATED",
+        "data": {
+          "orderId": "ORD-0001",
+          "itemIds": [
+            "banh-mi-may"
+          ],
+          "total": 32000
+        }
+      },
+      {
+        "sequence": 2,
+        "type": "PAYMENT_CHARGED",
+        "data": {
+          "orderId": "ORD-0001",
+          "amount": 32000,
+          "outcome": "SUCCESS"
+        }
+      },
+      {
+        "sequence": 3,
+        "type": "ORDER_STATE_CHANGED",
+        "data": {
+          "orderId": "ORD-0001",
+          "from": "AWAITING_PAYMENT",
+          "to": "CONFIRMED"
+        }
+      },
+      {
+        "sequence": 4,
+        "type": "ORDER_STATE_CHANGED",
+        "data": {
+          "orderId": "ORD-0001",
+          "from": "CONFIRMED",
+          "to": "IN_KITCHEN"
+        }
+      },
+      {
+        "sequence": 5,
+        "type": "ORDER_STATE_CHANGED",
+        "data": {
+          "orderId": "ORD-0001",
+          "from": "IN_KITCHEN",
+          "to": "READY"
+        }
+      },
+      {
+        "sequence": 6,
+        "type": "ORDER_STATE_CHANGED",
+        "data": {
+          "orderId": "ORD-0001",
+          "from": "READY",
+          "to": "COMPLETED"
+        }
+      }
+    ]
+  }
+}

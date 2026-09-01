@@ -8,7 +8,7 @@ export const orderStates = {
   rejected: 'REJECTED',
 };
 
-export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
+export function createOrderStore({ catalogStore, eventLog, idPrefix = 'ORD' }) {
   const orders = new Map();
   let nextOrderNumber = 1;
 
@@ -63,6 +63,7 @@ export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
     order.state = to;
     Object.assign(order, details);
     order.history.push({ state: to, note });
+    eventLog?.append('ORDER_STATE_CHANGED', { orderId, from, to });
     return { ok: true, order: copyOrder(order) };
   }
 
@@ -93,6 +94,11 @@ export function createOrderStore({ catalogStore, idPrefix = 'ORD' }) {
       };
       nextOrderNumber += 1;
       orders.set(order.id, order);
+      eventLog?.append('ORDER_CREATED', {
+        orderId: order.id,
+        itemIds: order.lineItems.map((item) => item.itemId),
+        total: order.total,
+      });
       return { ok: true, order: copyOrder(order) };
     },
 
