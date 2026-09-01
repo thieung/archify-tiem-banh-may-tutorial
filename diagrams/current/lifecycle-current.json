@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Tiệm bánh Mây — Order Lifecycle CURRENT",
+    "subtitle": "Chỉ các state có transition thực thi được trong source",
+    "output": "lifecycle-current.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 600],
+    "views": [
+      { "id": "happyPath", "label": "Đơn thành công", "focus": ["awaitingPayment", "confirmed", "inKitchen", "ready", "completed"], "note": "Một order hợp lệ đi qua thanh toán, bếp, sẵn sàng và giao xong." },
+      { "id": "paymentFailure", "label": "Thanh toán lỗi", "focus": ["awaitingPayment", "paymentFailed"], "note": "Payment bị từ chối kết thúc ở PAYMENT_FAILED; demo không có retry transition." },
+      { "id": "sourceBoundary", "label": "Ranh giới evidence", "focus": ["awaitingPayment", "paymentFailed", "completed"], "note": "REJECTED có trong enum nhưng không có transition reachable nên không được vẽ." }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "Happy path" },
+    { "id": "failure", "label": "Terminal failure" }
+  ],
+  "states": [
+    { "id": "awaitingPayment", "type": "start", "label": "AWAITING_PAYMENT", "sublabel": "đã giữ hàng", "lane": "main", "col": 0, "step": "01", "tag": "entry" },
+    { "id": "confirmed", "type": "active", "label": "CONFIRMED", "sublabel": "đã thanh toán", "lane": "main", "col": 1, "step": "02", "tag": "paid" },
+    { "id": "inKitchen", "type": "active", "label": "IN_KITCHEN", "sublabel": "bếp đang làm", "lane": "main", "col": 2, "step": "03", "tag": "work" },
+    { "id": "ready", "type": "waiting", "label": "READY", "sublabel": "chờ khách nhận", "lane": "main", "col": 3, "step": "04", "tag": "pickup" },
+    { "id": "completed", "type": "success", "label": "COMPLETED", "sublabel": "đã giao đủ món", "lane": "main", "col": 4, "step": "05", "tag": "terminal" },
+    { "id": "paymentFailed", "type": "failure", "label": "PAYMENT_FAILED", "sublabel": "CARD_DECLINED", "lane": "failure", "col": 0, "tag": "terminal" }
+  ],
+  "transitions": [
+    { "id": "paymentSuccess", "from": "awaitingPayment", "to": "confirmed", "label": "charge success", "variant": "emphasis", "route": "straight", "labelDy": -25 },
+    { "id": "kitchenStart", "from": "confirmed", "to": "inKitchen", "label": "kitchen tick", "variant": "emphasis", "route": "straight", "labelDy": -25 },
+    { "id": "kitchenReady", "from": "inKitchen", "to": "ready", "label": "kitchen tick", "variant": "emphasis", "route": "straight", "labelDy": -25 },
+    { "id": "customerPickup", "from": "ready", "to": "completed", "label": "complete order", "variant": "emphasis", "route": "straight", "labelDy": -25 },
+    { "id": "paymentDeclined", "from": "awaitingPayment", "to": "paymentFailed", "label": "CARD_DECLINED", "variant": "security", "fromSide": "bottom", "toSide": "top", "via": [[94, 230], [402, 230]], "labelAt": [248, 250] }
+  ]
+}
