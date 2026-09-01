@@ -1,0 +1,61 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Tiệm bánh Mây — Workflow CURRENT",
+    "subtitle": "Happy path và hai nhánh dừng được chứng minh bởi test",
+    "output": "workflow-current.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "viewBox": [1200, 760],
+    "views": [
+      { "id": "happy", "label": "Đơn hoàn tất", "focus": ["choose", "create", "stock", "charge", "confirmed", "prepare", "ready", "complete"], "note": "Theo đơn success fixture qua hai kitchen tick đến COMPLETED." },
+      { "id": "soldout", "label": "Hết hàng", "focus": ["create", "stock", "rejected"], "note": "SOLD_OUT dừng trước khi tạo order và trước payment." },
+      { "id": "decline", "label": "Payment lỗi", "focus": ["charge", "paymentFailed"], "note": "tok_declined đưa order sang PAYMENT_FAILED; không retry." }
+    ]
+  },
+  "lanes": [
+    { "id": "customer", "label": "Khách hàng" },
+    { "id": "application", "label": "Order application" },
+    { "id": "paymentLane", "label": "Payment mock", "variant": "exception" },
+    { "id": "kitchenLane", "label": "Bếp" }
+  ],
+  "phases": [
+    { "id": "intake", "label": "Đặt món", "fromCol": 0, "toCol": 2 },
+    { "id": "paymentPhase", "label": "Thanh toán", "fromCol": 3, "toCol": 3, "variant": "emphasis" },
+    { "id": "fulfillment", "label": "Làm và giao bánh", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["choose", "create", "stock", "charge", "confirmed", "prepare", "ready", "complete"],
+  "semanticChecks": {
+    "allowedRoots": ["choose"],
+    "allowedTerminals": ["complete", "rejected", "paymentFailed"],
+    "requiredPaths": [
+      { "from": "choose", "to": "complete" },
+      { "from": "stock", "to": "rejected" },
+      { "from": "charge", "to": "paymentFailed" }
+    ]
+  },
+  "nodes": [
+    { "id": "choose", "lane": "customer", "col": 0, "type": "frontend", "label": "Chọn món", "sublabel": "catalog + tên khách", "width": 128 },
+    { "id": "complete", "lane": "customer", "col": 5, "type": "external", "label": "Nhận bánh", "sublabel": "COMPLETED", "width": 128 },
+    { "id": "create", "lane": "application", "col": 1, "type": "backend", "label": "Tạo order", "sublabel": "POST /api/orders", "width": 128 },
+    { "id": "stock", "lane": "application", "col": 2, "type": "database", "label": "Giữ tồn kho", "sublabel": "reserve", "width": 128 },
+    { "id": "rejected", "lane": "application", "col": 3, "type": "security", "label": "Từ chối đơn", "sublabel": "SOLD_OUT", "width": 128 },
+    { "id": "confirmed", "lane": "application", "col": 4, "type": "backend", "label": "Xác nhận đơn", "sublabel": "CONFIRMED", "width": 128 },
+    { "id": "charge", "lane": "paymentLane", "col": 3, "type": "external", "label": "Charge fixture", "sublabel": "success / decline", "width": 128 },
+    { "id": "paymentFailed", "lane": "paymentLane", "col": 4, "type": "security", "label": "Payment lỗi", "sublabel": "PAYMENT_FAILED", "width": 128 },
+    { "id": "prepare", "lane": "kitchenLane", "col": 4, "type": "backend", "label": "Làm bánh", "sublabel": "tick → IN_KITCHEN", "width": 128 },
+    { "id": "ready", "lane": "kitchenLane", "col": 5, "type": "backend", "label": "Sẵn sàng", "sublabel": "tick → READY", "width": 128 }
+  ],
+  "edges": [
+    { "id": "chooseCreate", "from": "choose", "to": "create", "variant": "emphasis", "role": "main" },
+    { "id": "createStock", "from": "create", "to": "stock", "variant": "emphasis", "role": "main" },
+    { "id": "stockCharge", "from": "stock", "to": "charge", "label": "còn hàng", "variant": "emphasis", "role": "main" },
+    { "id": "stockReject", "from": "stock", "to": "rejected", "label": "hết hàng", "variant": "security", "role": "error" },
+    { "id": "chargeConfirm", "from": "charge", "to": "confirmed", "label": "success", "variant": "emphasis", "role": "main" },
+    { "id": "chargeFail", "from": "charge", "to": "paymentFailed", "label": "declined", "variant": "security", "role": "error" },
+    { "id": "confirmPrepare", "from": "confirmed", "to": "prepare", "variant": "emphasis", "role": "main" },
+    { "id": "prepareReady", "from": "prepare", "to": "ready", "variant": "emphasis", "role": "main" },
+    { "id": "readyComplete", "from": "ready", "to": "complete", "variant": "emphasis", "role": "main" }
+  ]
+}
